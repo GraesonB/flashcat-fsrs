@@ -54,12 +54,9 @@ class Card:
         self.lapses = 0
         self.state = State.New
 
-    def get_retrievability(self) -> Optional[float]:
-        if self.state == State.Review:
-            elapsed_days = max(0, (datetime.utcnow() - self.last_review).days)
-            return (1 + elapsed_days / (9 * self.stability)) ** -1
-        else:
-            return None
+    def get_retrievability(self) -> float:
+        return (1 + self.elapsed_days / (9 * self.stability)) ** -1
+  
 
     def update_state(self, rating: Rating):
         match (self.state):
