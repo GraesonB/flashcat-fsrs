@@ -1,4 +1,3 @@
-from rich import print
 import math
 from models import *
 
