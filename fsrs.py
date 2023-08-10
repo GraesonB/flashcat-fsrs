@@ -8,8 +8,7 @@ class FSRS:
     def __init__(self) -> None:
         self.params = Parameters()
 
-    def review(self, card: Card, rating: Rating):
-        now = datetime.utcnow()
+    def review(self, card: Card, rating: Rating, now=datetime.utcnow()):
         card.last_review = now
         card.reps += 1
 
@@ -68,8 +67,8 @@ class FSRS:
                     card.scheduled_days = interval
                     card.due = now + timedelta(days=interval)
                 
-            
         card.update_state(rating)
+        return card
 
 
     def init_stability(self, r: int) -> float:
@@ -89,7 +88,6 @@ class FSRS:
         next_d = d - self.params.w[6] * (r - 3)
         return min(max(self.mean_reversion(self.params.w[4], next_d), 1), 10)
     
-    
     def next_recall_stability(self, d: float, s: float, r: float, rating: int) -> float:
         hard_penalty = self.params.w[15] if rating == Rating.Hard else 1
         easy_bonus = self.params.w[16] if rating == Rating.Easy else 1
@@ -99,7 +97,6 @@ class FSRS:
                     (math.exp((1 - r) * self.params.w[10]) - 1) *
                     hard_penalty *
                     easy_bonus)
-
 
     def next_forget_stability(self, d: float, s: float, r: float) -> float:
         return self.params.w[11] * \

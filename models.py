@@ -3,20 +3,17 @@ import copy
 from typing import Tuple, Optional
 from enum import IntEnum
 
-
 class State(IntEnum):
     New = 0
     Learning = 1
     Review = 2
     Relearning = 3
 
-
 class Rating(IntEnum):
     Again = 1
     Hard = 2
     Good = 3
     Easy = 4
-
 
 class ReviewLog:
     rating: int
@@ -31,7 +28,6 @@ class ReviewLog:
         self.scheduled_days = scheduled_days
         self.review = review
         self.state = state
-
 
 class Card:
     due: datetime
@@ -56,6 +52,9 @@ class Card:
 
     def get_retrievability(self) -> float:
         return (1 + self.elapsed_days / (9 * self.stability)) ** -1
+    
+    def save_log(self, rating: Rating, ) -> ReviewLog:
+        return ReviewLog(rating, self.elapsed_days, self.scheduled_days, datetime.utcnow(), self.state)
   
 
     def update_state(self, rating: Rating):
@@ -78,8 +77,6 @@ class Card:
                     self.lapses += 1
                     self.state = State.Relearning
                     
-
-
 class Parameters:
     request_retention: float
     maximum_interval: int
