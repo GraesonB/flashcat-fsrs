@@ -9,13 +9,13 @@ class FSRS:
         self.params = Parameters()
 
     def review(self, card: Card, rating: Rating, now=datetime.utcnow()):
-        card.last_review = now
         card.reps += 1
 
         if card.state == State.New:
             card.elapsed_days = 0
         else:
             card.elapsed_days = (now - card.last_review).days
+        card.last_review = now
 
         match (card.state):
             case State.New:
@@ -56,14 +56,14 @@ class FSRS:
             case State.Review:
                 retrievability = card.get_retrievability()
                 card.difficulty = self.next_difficulty(card.difficulty, rating)
-                interval = self.next_interval(card.stability)
-                
+
                 if rating == Rating.Again:
                     card.stability = self.next_forget_stability(card.difficulty, card.stability, retrievability)
                     card.scheduled_days = 0
                     card.due = now + timedelta(minutes=5)
                 else:
                     card.stability = self.next_recall_stability(card.difficulty, card.stability, retrievability, rating)
+                    interval = self.next_interval(card.stability)
                     card.scheduled_days = interval
                     card.due = now + timedelta(days=interval)
                 
